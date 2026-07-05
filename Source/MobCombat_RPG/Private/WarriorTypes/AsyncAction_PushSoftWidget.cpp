@@ -25,3 +25,8 @@ UAsyncAction_PushSoftWidget* UAsyncAction_PushSoftWidget::PushSoftWidget(UObject
 
 	return nullptr;
 }
+
+void UAsyncAction_PushSoftWidget::Activate()
+{
+	Super::Activate();
+}
