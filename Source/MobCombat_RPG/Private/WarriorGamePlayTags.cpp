@@ -107,9 +107,13 @@ namespace WarriorGamePlayTags
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_HitReact_Back,"Shared.Status.HitReact.Back");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_Invincible,"Shared.Status.Invincible");
 
-	/** UI Tags ------------------------------------------------------------**/
+	/** UI Widget Stack ------------------------------------------------------------**/
 	UE_DEFINE_GAMEPLAY_TAG(UI_WidgetStack_Modal, "UI.WidgetStack.Modal");
 	UE_DEFINE_GAMEPLAY_TAG(UI_WidgetStack_GameMenu, "UI.WidgetStack.GameMenu");
 	UE_DEFINE_GAMEPLAY_TAG(UI_WidgetStack_GameHUD, "UI.WidgetStack.GameHUD");
 	UE_DEFINE_GAMEPLAY_TAG(UI_WidgetStack_GameFrontend, "UI.WidgetStack.Frontend");
+	
+	/** UI Widget ------------------------------------------------------------**/
+	UE_DEFINE_GAMEPLAY_TAG(UI_Widget_PressAnyKey, "UI.Widget.PressAnyKey");
+	UE_DEFINE_GAMEPLAY_TAG(UI_Widget_MainMenuScreen, "UI.Widget.MainMenuScreen");
 }

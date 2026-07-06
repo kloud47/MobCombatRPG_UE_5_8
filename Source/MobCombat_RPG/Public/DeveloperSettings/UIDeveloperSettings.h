@@ -18,7 +18,7 @@ class MOBCOMBAT_RPG_API UUIDeveloperSettings : public UDeveloperSettings
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(Config, EditAnywhere, Category = "Widget Reference", meta = (ForceInlineRow, Categories = "Frontend.Widget"))
+	UPROPERTY(Config, EditAnywhere, Category = "Widget Reference", meta = (ForceInlineRow, Categories = "UI.Widget"))
 	TMap<FGameplayTag, TSoftClassPtr<UWidget_ActivatableWidget>> FrontendWidgetMap;
 	
 };

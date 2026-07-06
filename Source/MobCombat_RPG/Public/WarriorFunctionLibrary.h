@@ -7,6 +7,7 @@
 #include "WarriorTypes/WarriorEnumsType.h"
 #include "WarriorFunctionLibrary.generated.h"
 
+class UWidget_ActivatableWidget;
 struct FGameplayEffectSpecHandle;
 class UPawnCombatComponent;
 struct FGameplayTag;
@@ -59,4 +60,7 @@ public:
 	static void CountDown(const UObject* WorldContextObject, float TotalTime, float UpdateInterval,
 		float& OutRemainingTime, EWarriorCountDownActionInput CountDownInput,
 		UPARAM(DisplayName = "Output") EWarriorCountDownActionOutput & CountDownOutput, FLatentActionInfo LatentInfo);
+	
+	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary")
+	static TSoftClassPtr<UWidget_ActivatableWidget> GetFrontendSOftWidgetClassByTag(UPARAM(meta = (Categories = "Frontend.Widget")) FGameplayTag InWidgetTag);
 };

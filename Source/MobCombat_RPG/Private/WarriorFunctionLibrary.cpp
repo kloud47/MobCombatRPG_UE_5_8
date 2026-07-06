@@ -8,8 +8,9 @@
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "Components/Combat/PawnCombatComponent.h"
 #include "Interfaces/PawnCombatInterface.h"
-#include "WarriorDebugHelper.h"
 #include "WarriorGamePlayTags.h"
+#include "DeveloperSettings/UIDeveloperSettings.h"
+#include "Engine/LatentActionManager.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "WarriorTypes/WarriorCountdownAction.h"
 
@@ -174,4 +175,13 @@ void UWarriorFunctionLibrary::CountDown(const UObject* WorldContextObject, float
 			if (FoundAction) FoundAction->CancelAction();	
 		}
 	}
+}
+
+TSoftClassPtr<UWidget_ActivatableWidget> UWarriorFunctionLibrary::GetFrontendSOftWidgetClassByTag(UPARAM(meta = (Categories = "Frontend.Widget")) FGameplayTag InWidgetTag)
+{
+	const  UUIDeveloperSettings* UIDeveloperSettings = GetDefault<UUIDeveloperSettings>();
+	
+	checkf(UIDeveloperSettings->FrontendWidgetMap.Contains(InWidgetTag),TEXT("Could not find the corresponding widget under the tag %s"),*InWidgetTag.ToString());
+	
+	return UIDeveloperSettings->FrontendWidgetMap.FindRef(InWidgetTag);
 }
