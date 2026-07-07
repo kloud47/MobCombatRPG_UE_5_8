@@ -6,6 +6,7 @@
 #include "CommonActivatableWidget.h"
 #include "Widget_ActivatableWidget.generated.h"
 
+class AWarriorHeroController;
 /**
  * 
  */
@@ -14,4 +15,10 @@ class MOBCOMBAT_RPG_API UWidget_ActivatableWidget : public UCommonActivatableWid
 {
 	GENERATED_BODY()
 	
+protected:
+	UFUNCTION(BlueprintPure)
+	AWarriorHeroController* GetOwningPlayerController();
+	
+private:
+	TWeakObjectPtr<AWarriorHeroController> CachedOwningPC;
 };

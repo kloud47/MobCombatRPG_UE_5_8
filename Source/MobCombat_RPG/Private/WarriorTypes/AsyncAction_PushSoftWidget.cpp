@@ -53,7 +53,7 @@ void UAsyncAction_PushSoftWidget::Activate()
 				
 				if (bCachedFocusOnNewlyPushedWidget)
 				{
-					if (UWidget* WidgetToFocus = PushedWidget->GetDesiredFocusTarget())
+					if (UWidget* WidgetToFocus = PushedWidget->GetDesiredFocusTarget()) // needs to be overriden in BP to return self/widget to focus:
 					{
 						WidgetToFocus->SetFocus();
 					}

@@ -27,6 +27,7 @@ public:
 	virtual void Activate() override;
 	//~ End UBlueprintAsyncActionBase Interface
 	
+	// These will be the Out pins:
 	UPROPERTY(BlueprintAssignable)
 	FOnPushSoftWidgetDelegate OnWidgetCreatedBeforePush;
 

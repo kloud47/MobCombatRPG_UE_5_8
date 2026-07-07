@@ -177,7 +177,7 @@ void UWarriorFunctionLibrary::CountDown(const UObject* WorldContextObject, float
 	}
 }
 
-TSoftClassPtr<UWidget_ActivatableWidget> UWarriorFunctionLibrary::GetFrontendSOftWidgetClassByTag(UPARAM(meta = (Categories = "Frontend.Widget")) FGameplayTag InWidgetTag)
+TSoftClassPtr<UWidget_ActivatableWidget> UWarriorFunctionLibrary::GetFrontendSOftWidgetClassByTag(UPARAM(meta = (Categories = "UI.Widget")) FGameplayTag InWidgetTag)
 {
 	const  UUIDeveloperSettings* UIDeveloperSettings = GetDefault<UUIDeveloperSettings>();
 	

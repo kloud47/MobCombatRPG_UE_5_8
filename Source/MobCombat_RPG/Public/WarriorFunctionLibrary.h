@@ -61,6 +61,6 @@ public:
 		float& OutRemainingTime, EWarriorCountDownActionInput CountDownInput,
 		UPARAM(DisplayName = "Output") EWarriorCountDownActionOutput & CountDownOutput, FLatentActionInfo LatentInfo);
 	
-	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary")
-	static TSoftClassPtr<UWidget_ActivatableWidget> GetFrontendSOftWidgetClassByTag(UPARAM(meta = (Categories = "Frontend.Widget")) FGameplayTag InWidgetTag);
+	UFUNCTION(BlueprintPure, Category = "Warrior|FunctionLibrary")
+	static TSoftClassPtr<UWidget_ActivatableWidget> GetFrontendSOftWidgetClassByTag(UPARAM(meta = (Categories = "UI.Widget")) FGameplayTag InWidgetTag);
 };
