@@ -3,22 +3,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "LatentActions.h"
 #include "WarriorEnumsType.h"
+#include "Engine/LatentActionManager.h"
 
 class FWarriorCountdownAction : public FPendingLatentAction
 {
 public:
 	FWarriorCountdownAction(float InTotalCountdownTime,float InUpdateInterval,float& InOutRemainingTime,EWarriorCountDownActionOutput& InCountDownOutput,const FLatentActionInfo& LatentInfo)
-	: bNeedToCancel(false)
-	, TotalCountDownTime(InTotalCountdownTime)
-	, UpdateInterval(InUpdateInterval)
-	, OutRemainingTime(InOutRemainingTime)
-	, CountDownOutput(InCountDownOutput)
-	, ExecutionFunction(LatentInfo.ExecutionFunction)
-	, OutputLink(LatentInfo.Linkage)
-	, CallbackTarget(LatentInfo.CallbackTarget)
-	, ElapsedInterval(0.f)
-	, ElapsedTimeSinceStart(0.f)
+		: bNeedToCancel(false)
+		, TotalCountDownTime(InTotalCountdownTime)
+		, UpdateInterval(InUpdateInterval)
+		, OutRemainingTime(InOutRemainingTime)
+		, CountDownOutput(InCountDownOutput)
+		, ExecutionFunction(LatentInfo.ExecutionFunction)
+		, OutputLink(LatentInfo.Linkage)
+		, CallbackTarget(LatentInfo.CallbackTarget)
+		, ElapsedInterval(0.f)
+		, ElapsedTimeSinceStart(0.f)
 	{
 	}
 

@@ -3,18 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayTagContainer.h"
 #include "Subsystems/GameInstanceSubsystem.h"
+#include "UObject/SoftObjectPtr.h"
 #include "FrontendUISubsystem.generated.h"
 
+struct FGameplayTag;
 class UWidget_PrimaryLayout;
 class UWidget_ActivatableWidget;
+class UUICommonButtonBase;
 
 enum class EAsyncPushWidgetState : uint8
 {
 	OnCreatedBeforePush,
 	AfterPush
 };
+
+// When on button hover:
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnButtonDescriptionTextUpdatedDelegate,UUICommonButtonBase*,BroadcastingButton,FText,DescriptionText);
 /**
  * 
  */
@@ -36,6 +41,8 @@ public:
 	void PushSoftWidgetToStackAynsc(const FGameplayTag& InWidgetStackTag,TSoftClassPtr<UWidget_ActivatableWidget> InSoftWidgetClass,
 		TFunction<void(EAsyncPushWidgetState,UWidget_ActivatableWidget*)> AysncPushStateCallback);
 
+	UPROPERTY(BlueprintAssignable)
+	FOnButtonDescriptionTextUpdatedDelegate OnButtonDescriptionTextUpdated;
 	
 private:
 	UPROPERTY(Transient)

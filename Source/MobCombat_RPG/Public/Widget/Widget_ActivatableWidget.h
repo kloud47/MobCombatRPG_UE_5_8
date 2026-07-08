@@ -20,5 +20,6 @@ protected:
 	AWarriorHeroController* GetOwningPlayerController();
 	
 private:
+	// f it's been destroyed — no dangling pointer risk, no manual "did anyone tell me this was destroyed" bookkeeping needed.
 	TWeakObjectPtr<AWarriorHeroController> CachedOwningPC;
 };
