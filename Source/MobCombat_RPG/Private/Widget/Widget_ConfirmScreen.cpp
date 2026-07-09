@@ -1,0 +1,133 @@
+// Priyanshu Shukla All Rights Reserved
+
+
+#include "Widget/Widget_ConfirmScreen.h"
+
+#include "CommonButtonBase.h"
+#include "CommonTextBlock.h"
+#include "ICommonInputModule.h"
+#include "Components/DynamicEntryBox.h"
+#include "Widget/UICommonButtonBase.h"
+
+UConfirmScreenInfoObject* UConfirmScreenInfoObject::CreateOKScreen(const FText& InScreenTitle, const FText& InScreenMsg)
+{
+	// Create the Confirm Screen Info Object and then use it for Activatable Widget:
+	UConfirmScreenInfoObject* InfoObject = NewObject<UConfirmScreenInfoObject>();
+	InfoObject->ScreenTitle = InScreenTitle;
+	InfoObject->ScreenMessage = InScreenMsg;
+	
+	FConfirmScreenButtonInfo OkButtonInfo;
+	OkButtonInfo.ConfirmScreenButtonType = EConfirmScreenButtonType::Closed;
+	OkButtonInfo.ButtonTextToDisplay = FText::FromString(TEXT("Ok"));
+	
+	InfoObject->AvailableScreenButtons.Add(OkButtonInfo);
+	return InfoObject;
+}
+
+UConfirmScreenInfoObject* UConfirmScreenInfoObject::CreateYesNoScreen(const FText& InScreenTitle,
+	const FText& InScreenMsg)
+{
+	UConfirmScreenInfoObject* InfoObject = NewObject<UConfirmScreenInfoObject>();
+	InfoObject->ScreenTitle = InScreenTitle;
+	InfoObject->ScreenMessage = InScreenMsg;
+	
+	FConfirmScreenButtonInfo YesButtonInfo;
+	YesButtonInfo.ConfirmScreenButtonType = EConfirmScreenButtonType::Confirmed;
+	YesButtonInfo.ButtonTextToDisplay = FText::FromString(TEXT("Yes"));
+	
+	FConfirmScreenButtonInfo NoButtonInfo;
+	NoButtonInfo.ConfirmScreenButtonType = EConfirmScreenButtonType::Cancelled;
+	NoButtonInfo.ButtonTextToDisplay = FText::FromString(TEXT("No"));
+	
+	InfoObject->AvailableScreenButtons.Add(YesButtonInfo);
+	InfoObject->AvailableScreenButtons.Add(NoButtonInfo);
+	
+	return InfoObject;
+}
+
+UConfirmScreenInfoObject* UConfirmScreenInfoObject::CreateOkCancelScreen(const FText& InScreenTitle,
+	const FText& InScreenMsg)
+{
+	UConfirmScreenInfoObject* InfoObject = NewObject<UConfirmScreenInfoObject>();
+	InfoObject->ScreenTitle = InScreenTitle;
+	InfoObject->ScreenMessage = InScreenMsg;
+
+	FConfirmScreenButtonInfo OkButtonInfo;
+	OkButtonInfo.ConfirmScreenButtonType = EConfirmScreenButtonType::Confirmed;
+	OkButtonInfo.ButtonTextToDisplay = FText::FromString(TEXT("Ok"));
+
+	FConfirmScreenButtonInfo CancelButtonInfo;
+	CancelButtonInfo.ConfirmScreenButtonType = EConfirmScreenButtonType::Cancelled;
+	CancelButtonInfo.ButtonTextToDisplay = FText::FromString(TEXT("Cancel"));
+
+	InfoObject->AvailableScreenButtons.Add(OkButtonInfo);
+	InfoObject->AvailableScreenButtons.Add(CancelButtonInfo);
+	
+	return InfoObject;
+}
+
+void UWidget_ConfirmScreen::InitConfirmScreen(UConfirmScreenInfoObject* InScreenInfoObject,
+	TFunction<void(EConfirmScreenButtonType)> ClickedButtonCallback)
+{
+	check(InScreenInfoObject && CommonTextBlock_Message && CommonTextBlock_Title && DynamicEntryBox_Buttons);
+	
+	CommonTextBlock_Title->SetText(InScreenInfoObject->ScreenTitle);
+	CommonTextBlock_Message->SetText(InScreenInfoObject->ScreenMessage);
+	
+	//Checking if the entry box has old button created previously
+	if (DynamicEntryBox_Buttons->GetNumEntries() != 0)
+	{
+		/*
+		*	Clearing the old buttons the entry box has. The widget type for the entry box
+		*	is specifled in the child widget blueprint.
+		*/
+		DynamicEntryBox_Buttons->Reset<UUICommonButtonBase>(
+			[](UUICommonButtonBase& ExistingButton)
+			{
+				ExistingButton.OnClicked().Clear();
+			}
+		);
+	}
+	
+	check(!InScreenInfoObject->AvailableScreenButtons.IsEmpty());
+	
+	for (const FConfirmScreenButtonInfo& AvailableButtonInfo : InScreenInfoObject->AvailableScreenButtons)
+	{
+		FDataTableRowHandle InputActionRowHandle;
+		
+		switch (AvailableButtonInfo.ConfirmScreenButtonType)
+		{
+		case EConfirmScreenButtonType::Confirmed:
+			InputActionRowHandle = ICommonInputModule::GetSettings().GetDefaultClickAction();
+			break;
+		case EConfirmScreenButtonType::Cancelled:
+			InputActionRowHandle = ICommonInputModule::GetSettings().GetDefaultBackAction();
+			break;
+		case EConfirmScreenButtonType::Closed:
+			InputActionRowHandle = ICommonInputModule::GetSettings().GetDefaultBackAction();
+			break;
+		default:
+			break;
+		}
+		
+		UUICommonButtonBase* AddButton = DynamicEntryBox_Buttons->CreateEntry<UUICommonButtonBase>();
+		AddButton->SetButtonText(AvailableButtonInfo.ButtonTextToDisplay);
+		AddButton->SetTriggeredInputAction(InputActionRowHandle);
+		AddButton->OnClicked().AddLambda(
+			[ClickedButtonCallback, AvailableButtonInfo, this] ()
+			{
+				ClickedButtonCallback(AvailableButtonInfo.ConfirmScreenButtonType);
+				DeactivateWidget();
+			}
+		);
+	}
+	
+	if (DynamicEntryBox_Buttons->GetNumEntries() != 0)
+	{
+		/*
+		*	Set focus on the last button. So if there are two buttons, one is yes, one is no.
+		*	Our gamepad will focus on the No button
+		*/
+		DynamicEntryBox_Buttons->GetAllEntries().Last()->SetFocus();
+	}
+}
