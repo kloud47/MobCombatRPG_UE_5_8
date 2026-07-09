@@ -7,6 +7,8 @@
 #include "UObject/SoftObjectPtr.h"
 #include "FrontendUISubsystem.generated.h"
 
+enum class EConfirmScreenButtonType : uint8;
+enum class EConfirmScreenType : uint8;
 struct FGameplayTag;
 class UWidget_PrimaryLayout;
 class UWidget_ActivatableWidget;
@@ -40,6 +42,8 @@ public:
 
 	void PushSoftWidgetToStackAynsc(const FGameplayTag& InWidgetStackTag,TSoftClassPtr<UWidget_ActivatableWidget> InSoftWidgetClass,
 		TFunction<void(EAsyncPushWidgetState,UWidget_ActivatableWidget*)> AysncPushStateCallback);
+	void PushConfirmScreenToModalStackAsync(EConfirmScreenType InScreenType, const FText& InScreenTitle, const FText& InScreenMsg,
+		TFunction<void(EConfirmScreenButtonType)> ButtonClickedCallback);
 
 	UPROPERTY(BlueprintAssignable)
 	FOnButtonDescriptionTextUpdatedDelegate OnButtonDescriptionTextUpdated;

@@ -3,11 +3,14 @@
 
 #include "Subsystems/FrontendUISubsystem.h"
 
+#include "WarriorFunctionLibrary.h"
+#include "WarriorGamePlayTags.h"
 #include "Engine/Engine.h"
 #include "Engine/GameInstance.h"
 #include "Widget_PrimaryLayout.h"
 #include "Engine/AssetManager.h"
 #include "Widget/Widget_ActivatableWidget.h"
+#include "Widget/Widget_ConfirmScreen.h"
 #include "Widgets/CommonActivatableWidgetContainer.h"
 
 UFrontendUISubsystem* UFrontendUISubsystem::Get(const UObject* WorldContextObject)
@@ -70,6 +73,50 @@ void UFrontendUISubsystem::PushSoftWidgetToStackAynsc(const FGameplayTag& InWidg
 			}
 		)
 	);
+}
+
+void UFrontendUISubsystem::PushConfirmScreenToModalStackAsync(EConfirmScreenType InScreenType,
+	const FText& InScreenTitle, const FText& InScreenMsg,
+	TFunction<void(EConfirmScreenButtonType)> ButtonClickedCallback)
+{
+	UConfirmScreenInfoObject* CreatedInfoObject = nullptr;
+
+	switch (InScreenType)
+	{
+	case EConfirmScreenType::Ok:
+		CreatedInfoObject = UConfirmScreenInfoObject::CreateOKScreen(InScreenTitle,InScreenMsg);
+		break;
+
+	case EConfirmScreenType::YesNo:
+		CreatedInfoObject = UConfirmScreenInfoObject::CreateYesNoScreen(InScreenTitle,InScreenMsg);
+		break;
+
+	case EConfirmScreenType::OKCancel:
+		CreatedInfoObject = UConfirmScreenInfoObject::CreateOkCancelScreen(InScreenTitle,InScreenMsg);
+		break;
+
+	case EConfirmScreenType::Unkown:
+		break;
+	default:
+		break;
+	}
+	
+	check(CreatedInfoObject);
+	
+	// Asynchronously Load and Push to stack widget:
+	PushSoftWidgetToStackAynsc(
+		WarriorGamePlayTags::UI_WidgetStack_Modal,
+		UWarriorFunctionLibrary::GetFrontendSOftWidgetClassByTag(WarriorGamePlayTags::UI_Widget_ConfirmScreen),
+		[CreatedInfoObject, ButtonClickedCallback] (EAsyncPushWidgetState InPushState, UWidget_ActivatableWidget* PushedWidget)
+		{
+			if (InPushState == EAsyncPushWidgetState::OnCreatedBeforePush)
+			{
+				UWidget_ConfirmScreen* CreatedConfirmScreen = CastChecked<UWidget_ConfirmScreen>(PushedWidget);
+				CreatedConfirmScreen->InitConfirmScreen(CreatedInfoObject,ButtonClickedCallback);
+			}
+		}
+	);
+	
 }
 
 

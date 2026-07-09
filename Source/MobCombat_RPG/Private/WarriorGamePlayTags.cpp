@@ -116,4 +116,5 @@ namespace WarriorGamePlayTags
 	/** UI Widget ------------------------------------------------------------**/
 	UE_DEFINE_GAMEPLAY_TAG(UI_Widget_PressAnyKey, "UI.Widget.PressAnyKey");
 	UE_DEFINE_GAMEPLAY_TAG(UI_Widget_MainMenuScreen, "UI.Widget.MainMenuScreen");
+	UE_DEFINE_GAMEPLAY_TAG(UI_Widget_ConfirmScreen, "UI.Widget.ConfirmScreen");
 }
