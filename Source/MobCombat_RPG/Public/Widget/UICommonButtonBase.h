@@ -15,6 +15,7 @@ class MOBCOMBAT_RPG_API UUICommonButtonBase : public UCommonButtonBase
 {
 	GENERATED_BODY()
 
+public:
 	UFUNCTION(BlueprintCallable)
 	void SetButtonText(FText InText);
 	
