@@ -14,6 +14,9 @@ UAsyncAction_PushConfirmScreen* UAsyncAction_PushConfirmScreen::PushConfirmScree
 		if (UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
 		{
 			UAsyncAction_PushConfirmScreen* Node = NewObject<UAsyncAction_PushConfirmScreen>();
+			// If a GC pass runs at the wrong moment (which happens periodically and unpredictably — triggered by memory pressure, level loads, or just routine GC ticks),
+			// Node could be collected before its async work finishes.  
+			Node->RegisterWithGameInstance(World);
 			Node->CachedOwningWorld = World;
 			Node->CachedScreenType = ScreenType;
 			Node->CachedScreenTitle = InScreenTitle;
