@@ -7,6 +7,7 @@
 #include "Widget/Widget_ActivatableWidget.h"
 #include "Widget_OptionsScreen.generated.h"
 
+class UUICommonListView;
 class UUUITabListWidgetBase;
 class UOptionsDataRegistry;
 /**
@@ -38,6 +39,9 @@ private:
 	//***** Bound Widgets ***** //
 	UPROPERTY(meta = (BindWidget))
 	UUUITabListWidgetBase* TabListWidget_OptionsTabs;
+	
+	UPROPERTY(meta = (BindWidget))
+	UUICommonListView* CommonListView_OptionsList;
 	//***** Bound Widgets ***** //
 	
 	//Handle the creation of data in the options screen. Direct access to this variable is forbidden
