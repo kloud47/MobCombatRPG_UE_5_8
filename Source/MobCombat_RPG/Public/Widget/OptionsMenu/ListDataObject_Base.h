@@ -27,8 +27,15 @@ public:
 	LIST_DATA_ACCESSOR(TSoftObjectPtr<UTexture2D>,SoftDescriptionImage)
 	LIST_DATA_ACCESSOR(UListDataObject_Base*,ParentData)
 	
+	void InitDataObject();
+	
 	//Empty in the base class. Child class ListDataObject_Collection should override it. The function should return all the child data a tab has
-	virtual TArray<UListDataObject_Base*> GetChildSettingData() const { return TArray<UListDataObject_Base*>();}
+	virtual TArray<UListDataObject_Base*> GetAllChildListData() const { return TArray<UListDataObject_Base*>();}
+	virtual bool HasAnyChildListData() const { return false; }
+	
+protected:
+	//Empty in base class. The child classes should override it to handle the initialization needed accordingly
+	virtual void OnDataObjectInitialized();
 	
 private:
 	FName DataID;

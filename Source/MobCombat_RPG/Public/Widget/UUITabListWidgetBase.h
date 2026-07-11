@@ -16,6 +16,8 @@ class MOBCOMBAT_RPG_API UUUITabListWidgetBase : public UCommonTabListWidgetBase
 	GENERATED_BODY()
 	
 public:
+	void RequestRegisterTab(const FName& InTabID,const FText& InTabDisplayName);
+	
 	//~ Begin UWidget Interface
 #if WITH_EDITOR	
 	virtual void ValidateCompiledDefaults(class IWidgetCompilerLog& CompileLog) const override;
