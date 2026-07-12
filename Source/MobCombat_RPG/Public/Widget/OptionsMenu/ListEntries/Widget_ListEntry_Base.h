@@ -9,7 +9,11 @@
 
 class UCommonTextBlock;
 /**
+ * IUserObjectListEntry is an interface (not a full base class) in Unreal's UMG list system — 
+ * implemented by row widgets used inside UListView/UTileView/similar list-based widgets. 
+ * It's the bridge between "generic data object" and "the actual widget row that displays that data."
  * 
+ * This is a required interface for creating any kind of List Item inside listView:
  */
 UCLASS(Abstract, BlueprintType, meta = (DisableNativeTick))
 class MOBCOMBAT_RPG_API UWidget_ListEntry_Base : public UCommonUserWidget, public IUserObjectListEntry

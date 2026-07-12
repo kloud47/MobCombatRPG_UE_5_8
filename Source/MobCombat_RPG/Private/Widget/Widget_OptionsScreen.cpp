@@ -6,6 +6,7 @@
 #include "ICommonInputModule.h"
 #include "WarriorDebugHelper.h"
 #include "Input/CommonUIInputTypes.h"
+#include "Widget/UICommonListView.h"
 #include "Widget/UUITabListWidgetBase.h"
 #include "Widget/OptionsMenu/ListDataObject_Collection.h"
 #include "Widget/OptionsMenu/OptionsDataRegistry.h"
@@ -33,14 +34,15 @@ void UWidget_OptionsScreen::NativeOnInitialized()
 			)
 	);
 	
-	TabListWidget_OptionsTabs->OnTabSelected.AddUniqueDynamic(this, &ThisClass::UWidget_OptionsScreen::OnOptionsTabSelected);
+	TabListWidget_OptionsTabs->OnTabSelected.AddUniqueDynamic(this, &ThisClass::OnOptionsTabSelected);
 }
 
 void UWidget_OptionsScreen::NativeOnActivated()
 {
 	Super::NativeOnActivated();
 	
-	for (UListDataObject_Collection* TabCollection : GetOrCreateDataRegistry()->GetRegisteredOptionsTabCollections())
+	const TArray<UListDataObject_Collection*> TabCollections = GetOrCreateDataRegistry()->GetRegisteredOptionsTabCollections();
+	for (UListDataObject_Collection* TabCollection : TabCollections)
 	{
 		if (!TabCollection) continue;
 		// On Widget Activated Create the Tabs from Code here:
@@ -77,5 +79,18 @@ void UWidget_OptionsScreen::OnBackBoundActionTriggered()
 
 void UWidget_OptionsScreen::OnOptionsTabSelected(FName TabId)
 {
-	Debug::Print(TEXT("New Tab Selected. Tab ID: ") + TabId.ToString());
+	// Debug::Print(FString::Printf(TEXT("Is the code even running. %s"), *TabId.ToString()));
+	// This gives us all the Source Items contained Inside the DataRegistry:
+	const TArray<UListDataObject_Base*> FoundListSourceItems = GetOrCreateDataRegistry()->GetListOfSourceItemBySelectedTabID(TabId);
+	
+	
+	CommonListView_OptionsList->SetListItems(FoundListSourceItems);
+	CommonListView_OptionsList->RequestRefresh();
+	
+	if (CommonListView_OptionsList->GetNumItems() != 0)
+	{
+		// It tells the list view: "scroll so that item at index 0 is visible,
+		CommonListView_OptionsList->NavigateToIndex(0);
+		CommonListView_OptionsList->SetSelectedIndex(0);
+	}
 }

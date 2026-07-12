@@ -6,6 +6,7 @@
 #include "UObject/Object.h"
 #include "OptionsDataRegistry.generated.h"
 
+class UListDataObject_Base;
 class UListDataObject_Collection;
 /**
  * Contains all Options Tabs and Data Inside them:
@@ -20,6 +21,8 @@ public:
 	void InitOptionsDataRegistry(ULocalPlayer* InOwningLocalPlayer);
 
 	const TArray<UListDataObject_Collection*>& GetRegisteredOptionsTabCollections() const { return RegisteredOptionsTabCollections;}
+	
+	TArray<UListDataObject_Base*> GetListOfSourceItemBySelectedTabID(const FName& InSelectedTabID) const;
 private:
 	void InitGameplayCollectionTab();
 	void InitAudioCollectionTab();
