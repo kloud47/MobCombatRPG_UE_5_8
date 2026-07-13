@@ -23,6 +23,8 @@ public:
 	//~ End UListDataObject_Base Interface
 
 private:
+	// It contains all Child types list data like string, Enums, floats, etc.
+	// And Collection here a bigger container like a Tab.
 	UPROPERTY(Transient)
 	TArray<UListDataObject_Base*> ChildListDataArray;
 };

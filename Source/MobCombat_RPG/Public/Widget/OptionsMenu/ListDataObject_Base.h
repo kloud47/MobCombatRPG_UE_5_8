@@ -14,7 +14,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class MOBCOMBAT_RPG_API UListDataObject_Base : public UObject
 {
 	GENERATED_BODY()
