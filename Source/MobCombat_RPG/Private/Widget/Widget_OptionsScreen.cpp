@@ -11,6 +11,7 @@
 #include "Widget/UUITabListWidgetBase.h"
 #include "Widget/OptionsMenu/ListDataObject_Collection.h"
 #include "Widget/OptionsMenu/OptionsDataRegistry.h"
+#include "Widget/OptionsMenu/Widget_OptionsDetailsView.h"
 #include "Widget/OptionsMenu/ListEntries/Widget_ListEntry_Base.h"
 
 void UWidget_OptionsScreen::NativeOnInitialized()
@@ -91,6 +92,7 @@ void UWidget_OptionsScreen::OnBackBoundActionTriggered()
 
 void UWidget_OptionsScreen::OnOptionsTabSelected(FName TabId)
 {
+	DetailsView_ListEntryInfo->ClearDetailsViewInfo();
 	// Debug::Print(FString::Printf(TEXT("Is the code even running. %s"), *TabId.ToString()));
 	// This gives us all the Source Items contained Inside the DataRegistry:
 	const TArray<UListDataObject_Base*> FoundListSourceItems = GetOrCreateDataRegistry()->GetListOfSourceItemBySelectedTabID(TabId);
@@ -117,12 +119,42 @@ void UWidget_OptionsScreen::OnListViewItemHovered(UObject* InHoveredItem, bool b
 	UWidget_ListEntry_Base* HoveredItemWidget = CommonListView_OptionsList->GetEntryWidgetFromItem<UWidget_ListEntry_Base>(InHoveredItem);
 	check(HoveredItemWidget);
 	HoveredItemWidget->NativeOnListEntryWidgetHovered(bWasHovered);
+	
+	if (bWasHovered)
+	{
+		DetailsView_ListEntryInfo->UpdateDetailsViewInfo(
+			CastChecked<UListDataObject_Base>(InHoveredItem),
+			TryGetEntryWidgetClassName(InHoveredItem)
+			);
+	}
+	else
+	{
+		if (UListDataObject_Base* SelectedItem = CommonListView_OptionsList->GetSelectedItem<UListDataObject_Base>())
+		{
+			DetailsView_ListEntryInfo->UpdateDetailsViewInfo(
+				SelectedItem,
+				TryGetEntryWidgetClassName(SelectedItem)
+			);
+		}
+	}
 }
 
 void UWidget_OptionsScreen::OnListViewItemSelected(UObject* InSelectedItem)
 {
-	if (!InSelectedItem)
+	if (!InSelectedItem) return;
+	
+	DetailsView_ListEntryInfo->UpdateDetailsViewInfo(
+		CastChecked<UListDataObject_Base>(InSelectedItem),
+		TryGetEntryWidgetClassName(InSelectedItem)
+	);
+}
+
+FString UWidget_OptionsScreen::TryGetEntryWidgetClassName(UObject* InOwningListItem) const
+{
+	if (UUserWidget* FoundEntryWidget = CommonListView_OptionsList->GetEntryWidgetFromItem(InOwningListItem))
 	{
-		return;
+		return FoundEntryWidget->GetClass()->GetName();	
 	}
+	
+	return TEXT("Entry Widget Not Valid");
 }

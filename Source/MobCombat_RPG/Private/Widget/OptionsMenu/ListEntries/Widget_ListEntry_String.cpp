@@ -15,6 +15,8 @@ void UWidget_ListEntry_String::NativeOnInitialized()
 	
 	CommonButton_NextOption->OnClicked().AddUObject(this, &ThisClass::OnNextOptionButtonClicked);
 	CommonButton_PreviousOption->OnClicked().AddUObject(this, &ThisClass::OnPreviousOptionButtonClicked);
+	
+	CommonRotator_AvailableOptions->OnClicked().AddLambda([this](){ SelectThisEntryWidget(); });
 }
 
 void UWidget_ListEntry_String::OnOwningListDataObjectSet(UListDataObject_Base* InOwningListDataObject)
@@ -23,11 +25,12 @@ void UWidget_ListEntry_String::OnOwningListDataObjectSet(UListDataObject_Base* I
 	
 	CachedOwningStringDataObject = CastChecked<UListDataObject_String>(InOwningListDataObject);
 	
+	// This is the code for Displaying the Values in Widget:
 	CommonRotator_AvailableOptions->PopulateTextLabels(CachedOwningStringDataObject->GetAvailableOptionsTextArray());
 	CommonRotator_AvailableOptions->SetSelectedOptionByText(CachedOwningStringDataObject->GetCurrentDisplayText());
 }
 
-void UWidget_ListEntry_String::OnOwningListDataObejectModified(UListDataObject_Base* OwningModifiedData,
+void UWidget_ListEntry_String::OnOwningListDataObjectModified(UListDataObject_Base* OwningModifiedData,
 	EOptionsListDataModifyReason ModifyReason)
 {
 	if (CachedOwningStringDataObject)
@@ -42,6 +45,7 @@ void UWidget_ListEntry_String::OnPreviousOptionButtonClicked()
 	// Debug::Print(TEXT("Previous Option Button Clicked"));
 	
 	if (CachedOwningStringDataObject) CachedOwningStringDataObject->BackToPreviousOption();
+	SelectThisEntryWidget();
 }
 
 void UWidget_ListEntry_String::OnNextOptionButtonClicked()
@@ -49,4 +53,5 @@ void UWidget_ListEntry_String::OnNextOptionButtonClicked()
 	// Debug::Print(TEXT("Next Option Button Clicked"));
 	
 	if (CachedOwningStringDataObject) CachedOwningStringDataObject->AdvanceToNextOption();
+	SelectThisEntryWidget();
 }

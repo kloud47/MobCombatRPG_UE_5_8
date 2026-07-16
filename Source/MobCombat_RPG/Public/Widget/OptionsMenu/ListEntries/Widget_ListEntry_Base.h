@@ -35,7 +35,9 @@ protected:
 	// The Child class should override this function to handle the initialization needed. Super call is expected 
 	virtual void OnOwningListDataObjectSet(UListDataObject_Base* InOwningListDataObject);
 	
-	virtual void OnOwningListDataObejectModified(UListDataObject_Base* OwningModifiedData, EOptionsListDataModifyReason ModifyReason);
+	virtual void OnOwningListDataObjectModified(UListDataObject_Base* OwningModifiedData, EOptionsListDataModifyReason ModifyReason);
+	
+	void SelectThisEntryWidget();
 	
 private:
 	//***** Bound Widgets ***** //

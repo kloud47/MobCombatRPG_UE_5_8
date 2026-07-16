@@ -4,6 +4,7 @@
 #include "Widget/OptionsMenu/ListEntries/Widget_ListEntry_Base.h"
 
 #include "CommonTextBlock.h"
+#include "Components/ListView.h"
 #include "Widget/OptionsMenu/ListDataObject_Base.h"
 
 void UWidget_ListEntry_Base::NativeOnListEntryWidgetHovered(bool bWasHovered)
@@ -32,11 +33,18 @@ void UWidget_ListEntry_Base::OnOwningListDataObjectSet(UListDataObject_Base* InO
 	// Checks to see if any functions are bound to the given user object.
 	if (!InOwningListDataObject->OnListDataModified.IsBoundToObject(this))
 	{
-		InOwningListDataObject->OnListDataModified.AddUObject(this, &ThisClass::OnOwningListDataObejectModified);
+		InOwningListDataObject->OnListDataModified.AddUObject(this, &ThisClass::OnOwningListDataObjectModified);
 	}
 }
 
-void UWidget_ListEntry_Base::OnOwningListDataObejectModified(UListDataObject_Base* OwningModifiedData,
+void UWidget_ListEntry_Base::OnOwningListDataObjectModified(UListDataObject_Base* OwningModifiedData,
 	EOptionsListDataModifyReason ModifyReason)
 {
+}
+
+// ListView Widget Manual Sselection and Highlight Code:
+void UWidget_ListEntry_Base::SelectThisEntryWidget()
+{
+	// Returns the UObject item in the owning UListView that this entry currently represents
+	CastChecked<UListView>(GetOwningListView())->SetSelectedItem(GetListItem());
 }
