@@ -14,4 +14,6 @@ class MOBCOMBAT_RPG_API UUICommonRotator : public UCommonRotator
 {
 	GENERATED_BODY()
 	
+public:
+	void SetSelectedOptionByText(const FText& InTextOption);
 };

@@ -5,11 +5,13 @@
 
 #include "ICommonInputModule.h"
 #include "WarriorDebugHelper.h"
+#include "DeveloperSettings/WarriorGameUserSettings.h"
 #include "Input/CommonUIInputTypes.h"
 #include "Widget/UICommonListView.h"
 #include "Widget/UUITabListWidgetBase.h"
 #include "Widget/OptionsMenu/ListDataObject_Collection.h"
 #include "Widget/OptionsMenu/OptionsDataRegistry.h"
+#include "Widget/OptionsMenu/ListEntries/Widget_ListEntry_Base.h"
 
 void UWidget_OptionsScreen::NativeOnInitialized()
 {
@@ -35,6 +37,9 @@ void UWidget_OptionsScreen::NativeOnInitialized()
 	);
 	
 	TabListWidget_OptionsTabs->OnTabSelected.AddUniqueDynamic(this, &ThisClass::OnOptionsTabSelected);
+	
+	CommonListView_OptionsList->OnItemIsHoveredChanged().AddUObject(this, &ThisClass::OnListViewItemHovered);
+	CommonListView_OptionsList->OnItemSelectionChanged().AddUObject(this, &ThisClass::OnListViewItemSelected);
 }
 
 void UWidget_OptionsScreen::NativeOnActivated()
@@ -52,6 +57,13 @@ void UWidget_OptionsScreen::NativeOnActivated()
 		
 		TabListWidget_OptionsTabs->RequestRegisterTab(TabID, TabCollection->GetDataDisplayName());
 	}
+}
+
+void UWidget_OptionsScreen::NativeOnDeactivated()
+{
+	Super::NativeOnDeactivated();
+	
+	UWarriorGameUserSettings::Get()->ApplySettings(true);
 }
 
 UOptionsDataRegistry* UWidget_OptionsScreen::GetOrCreateDataRegistry()
@@ -92,5 +104,25 @@ void UWidget_OptionsScreen::OnOptionsTabSelected(FName TabId)
 		// It tells the list view: "scroll so that item at index 0 is visible,
 		CommonListView_OptionsList->NavigateToIndex(0);
 		CommonListView_OptionsList->SetSelectedIndex(0);
+	}
+}
+
+void UWidget_OptionsScreen::OnListViewItemHovered(UObject* InHoveredItem, bool bWasHovered)
+{
+	if (!InHoveredItem)
+	{
+		return;
+	}
+
+	UWidget_ListEntry_Base* HoveredItemWidget = CommonListView_OptionsList->GetEntryWidgetFromItem<UWidget_ListEntry_Base>(InHoveredItem);
+	check(HoveredItemWidget);
+	HoveredItemWidget->NativeOnListEntryWidgetHovered(bWasHovered);
+}
+
+void UWidget_OptionsScreen::OnListViewItemSelected(UObject* InSelectedItem)
+{
+	if (!InSelectedItem)
+	{
+		return;
 	}
 }

@@ -3,8 +3,15 @@
 
 #include "Widget/OptionsMenu/OptionsDataRegistry.h"
 
+#include "DeveloperSettings/WarriorGameUserSettings.h"
 #include "Widget/OptionsMenu/ListDataObject_Collection.h"
 #include "Widget/OptionsMenu/ListDataObject_String.h"
+#include "Widget/OptionsMenu/OptionsDataInteractionHelper.h"
+
+#define MAKE_OPTIONS_DATA_CONTROL(SetterOrGetterFunctionName)\
+	MakeShared<FOptionsDataInteractionHelper>(GET_FUNCTION_NAME_STRING_CHECKED(UWarriorGameUserSettings, SetterOrGetterFunctionName))
+
+
 
 void UOptionsDataRegistry::InitOptionsDataRegistry(ULocalPlayer* InOwningLocalPlayer)
 {
@@ -37,11 +44,24 @@ void UOptionsDataRegistry::InitGameplayCollectionTab()
 	GameplayTabCollection->SetDataID(FName("GameplayTabCollection"));
 	GameplayTabCollection->SetDataDisplayName(FText::FromString(TEXT("Gameplay")));
 	
+	// This will be the full code for constructing Data interaction Helper:
+	// TSharedPtr<FOptionsDataInteractionHelper> ConstructedHelper = 
+	// 	MakeShared<FOptionsDataInteractionHelper>(GET_FUNCTION_NAME_STRING_CHECKED(UWarriorGameUserSettings, GetCurrentGameDifficulty));
+	
 	// Game Difficulty:
 	{
 		UListDataObject_String* GameDifficulty = NewObject<UListDataObject_String>();
 		GameDifficulty->SetDataID(FName("GameDifficulty"));
 		GameDifficulty->SetDataDisplayName(FText::FromString(TEXT("Difficulty")));
+		// Adding Data To above ID:
+		GameDifficulty->AddDynamicOptions(TEXT("Easy"), FText::FromString(TEXT("Easy")));
+		GameDifficulty->AddDynamicOptions(TEXT("Normal"), FText::FromString(TEXT("Normal")));
+		GameDifficulty->AddDynamicOptions(TEXT("Hard"), FText::FromString(TEXT("Hard")));
+		GameDifficulty->AddDynamicOptions(TEXT("Extreme"), FText::FromString(TEXT("Extreme")));
+		
+		GameDifficulty->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetCurrentGameDifficulty));
+		GameDifficulty->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetCurrentGameDifficulty));
+		GameDifficulty->SetShouldApplySettingsImmediately(true);
 		
 		GameplayTabCollection->AddChildListData(GameDifficulty);
 	}

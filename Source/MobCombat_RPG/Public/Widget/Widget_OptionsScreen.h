@@ -25,6 +25,7 @@ protected:
 	
 	//~ Begin UCommonActivatableWidget Interface
 	virtual void NativeOnActivated() override;
+	virtual void NativeOnDeactivated() override;
 	//~ End UCommonActivatableWidget Interface
 
 private:
@@ -35,6 +36,9 @@ private:
 	
 	UFUNCTION()
 	void OnOptionsTabSelected(FName TabId);
+	
+	void OnListViewItemHovered(UObject* InHoveredItem, bool bWasHovered);
+	void OnListViewItemSelected(UObject* InSelectedItem);
 	
 	//***** Bound Widgets ***** //
 	UPROPERTY(meta = (BindWidget))

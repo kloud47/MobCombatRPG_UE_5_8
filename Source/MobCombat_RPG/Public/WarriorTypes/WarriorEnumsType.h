@@ -46,6 +46,8 @@ enum class EWarriorGameplayDifficulty : uint8
 	VeryHard
 };
 
+// ----------------------- ( UI ) ----------------------------------------------------------------------
+
 UENUM(BlueprintType)
 enum class EConfirmScreenType : uint8
 {
@@ -62,4 +64,12 @@ enum class EConfirmScreenButtonType : uint8
 	Cancelled,
 	Closed,
 	Unkown UMETA(Hidden)
+};
+
+UENUM(BlueprintType)
+enum class EOptionsListDataModifyReason : uint8
+{
+	DirectlyModified,
+	DependencyModified,
+	ResetToDefault
 };
