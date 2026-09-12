@@ -14,6 +14,15 @@ void UUICommonButtonBase::SetButtonText(FText InText)
 	}
 }
 
+FText UUICommonButtonBase::GetButtonDisplayText()
+{
+	if (CommonTextBlock_ButtonText)
+	{
+		return CommonTextBlock_ButtonText->GetText();
+	}
+	return FText();
+}
+
 void UUICommonButtonBase::NativePreConstruct()
 {
 	Super::NativePreConstruct();

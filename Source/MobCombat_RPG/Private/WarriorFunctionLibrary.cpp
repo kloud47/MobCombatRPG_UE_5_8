@@ -179,9 +179,18 @@ void UWarriorFunctionLibrary::CountDown(const UObject* WorldContextObject, float
 
 TSoftClassPtr<UWidget_ActivatableWidget> UWarriorFunctionLibrary::GetFrontendSOftWidgetClassByTag(UPARAM(meta = (Categories = "UI.Widget")) FGameplayTag InWidgetTag)
 {
-	const  UUIDeveloperSettings* UIDeveloperSettings = GetDefault<UUIDeveloperSettings>();
+	const UUIDeveloperSettings* UIDeveloperSettings = GetDefault<UUIDeveloperSettings>();
 	
 	checkf(UIDeveloperSettings->FrontendWidgetMap.Contains(InWidgetTag),TEXT("Could not find the corresponding widget under the tag %s"),*InWidgetTag.ToString());
 	
 	return UIDeveloperSettings->FrontendWidgetMap.FindRef(InWidgetTag);
+}
+
+TSoftObjectPtr<UTexture2D> UWarriorFunctionLibrary::GetOptionsSoftImageByTag(UPARAM(meta = (Categories = "UI.Image")) FGameplayTag InImageTag)
+{
+	const UUIDeveloperSettings* UIDeveloperSettings = GetDefault<UUIDeveloperSettings>();
+	
+	checkf(UIDeveloperSettings->OptionsScreenSoftImageMap.Contains(InImageTag),TEXT("Could not find an image associated with tag %s"),*InImageTag.ToString());
+	
+	return UIDeveloperSettings->OptionsScreenSoftImageMap.FindRef(InImageTag);
 }

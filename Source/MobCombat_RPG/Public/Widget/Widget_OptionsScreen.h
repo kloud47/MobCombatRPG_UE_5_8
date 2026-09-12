@@ -7,6 +7,8 @@
 #include "Widget/Widget_ActivatableWidget.h"
 #include "Widget_OptionsScreen.generated.h"
 
+enum class EOptionsListDataModifyReason : uint8;
+class UListDataObject_Base;
 class UWidget_OptionsDetailsView;
 class UUICommonListView;
 class UUUITabListWidgetBase;
@@ -43,6 +45,8 @@ private:
 	
 	FString TryGetEntryWidgetClassName(UObject* InOwningListItem) const;
 	
+	void OnListViewListDataModified(UListDataObject_Base* ModifiedData,EOptionsListDataModifyReason ModifyReason);
+	
 	// ***** Bound Widgets ***** //
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UUUITabListWidgetBase> TabListWidget_OptionsTabs;
@@ -62,4 +66,9 @@ private:
 	FDataTableRowHandle ResetAction;
 	
 	FUIActionBindingHandle ResetActionHandle;
+	
+	UPROPERTY(Transient)
+	TArray<UListDataObject_Base*> ResettableDataArray;
+	
+	bool bIsResettingData = false;
 };

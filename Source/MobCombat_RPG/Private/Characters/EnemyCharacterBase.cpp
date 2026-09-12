@@ -6,10 +6,12 @@
 #include "WarriorDebugHelper.h"
 #include "WarriorFunctionLibrary.h"
 #include "Components/BoxComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/Combat/EnemyCombatComponent.h"
 #include "Components/UI/EnemyUIComponent.h"
 #include "DataAssets/StartupData/DA_StartupEnemyData.h"
+#include "DeveloperSettings/WarriorGameUserSettings.h"
 #include "Engine/AssetManager.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameModes/RPGGameModeBase.h"
@@ -119,24 +121,25 @@ void AEnemyCharacterBase::InitEnemyStartupData() const
 
 		int32 AbilityApplyLevel = 1;
 
-		if (ARPGGameModeBase* BaseGameMode = GetWorld()->GetAuthGameMode<ARPGGameModeBase>())
+		if (UWarriorGameUserSettings* UserSettings = UWarriorGameUserSettings::Get())
 		{
-			switch (BaseGameMode->GetCurrentGameDifficulty())
+			const FString CurrentDifficulty = UserSettings->GetCurrentGameDifficulty();
+
+			if (CurrentDifficulty.Equals(TEXT("Easy"), ESearchCase::IgnoreCase))
 			{
-			case EWarriorGameplayDifficulty::Easy:
 				AbilityApplyLevel = 1;
-				break;
-			case EWarriorGameplayDifficulty::Normal:
-				AbilityApplyLevel = 2;	
-				break;
-			case EWarriorGameplayDifficulty::Hard:
+			}
+			else if (CurrentDifficulty.Equals(TEXT("Normal"), ESearchCase::IgnoreCase))
+			{
+				AbilityApplyLevel = 2; 
+			}
+			else if (CurrentDifficulty.Equals(TEXT("Hard"), ESearchCase::IgnoreCase))
+			{
 				AbilityApplyLevel = 3;
-				break;
-			case EWarriorGameplayDifficulty::VeryHard:
+			}
+			else if (CurrentDifficulty.Equals(TEXT("Extreme"), ESearchCase::IgnoreCase))
+			{
 				AbilityApplyLevel = 4;
-				break;
-			default:
-				break;	
 			}
 		}
 		

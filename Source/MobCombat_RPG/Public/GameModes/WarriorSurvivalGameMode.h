@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameModes/RPGGameModeBase.h"
+#include "Widget/UUITabListWidgetBase.h"
 #include "WarriorSurvivalGameMode.generated.h"
 
 class UDataTable;

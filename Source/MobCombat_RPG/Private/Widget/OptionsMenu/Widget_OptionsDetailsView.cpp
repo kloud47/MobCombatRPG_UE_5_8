@@ -20,6 +20,9 @@ void UWidget_OptionsDetailsView::UpdateDetailsViewInfo(UListDataObject_Base* InD
 	{
 		CommonLazyImage_DescriptionImage->SetBrushFromLazyTexture(InDataObject->GetSoftDescriptionImage());
 		CommonLazyImage_DescriptionImage->SetVisibility(ESlateVisibility::HitTestInvisible);// Makes image visible but it just does not respond to mouse click:
+	} else
+	{
+		CommonLazyImage_DescriptionImage->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	
 	CommonRichText_Description->SetText(InDataObject->GetDescriptionRichText());

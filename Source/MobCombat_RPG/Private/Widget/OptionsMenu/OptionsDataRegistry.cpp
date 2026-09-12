@@ -3,7 +3,10 @@
 
 #include "Widget/OptionsMenu/OptionsDataRegistry.h"
 
+#include "WarriorFunctionLibrary.h"
+#include "WarriorGamePlayTags.h"
 #include "DeveloperSettings/WarriorGameUserSettings.h"
+#include "Subsystems/FrontendUISubsystem.h"
 #include "Widget/OptionsMenu/ListDataObject_Collection.h"
 #include "Widget/OptionsMenu/ListDataObject_String.h"
 #include "Widget/OptionsMenu/OptionsDataInteractionHelper.h"
@@ -55,13 +58,15 @@ void UOptionsDataRegistry::InitGameplayCollectionTab()
 		GameDifficulty->SetDataDisplayName(FText::FromString(TEXT("Difficulty")));
 		GameDifficulty->SetDescriptionRichText(FText::FromString(TEXT("Adjusts the difficulty of the game experience.\n\n<Bold>Easy:</> "
 			"Focuses on the story experience. Provides the most relaxing combat.\n\n<Bold>Normal:</> Offers slightly harder combat experience\n\n"
-			"<Bold>Hard:</> Offers a much more challenging combat experience\n\n<Bold>Vert Hard:</> Provides the most challenging combat experience. Not recommended for first play through.")));
+			"<Bold>Hard:</> Offers a much more challenging combat experience\n\n<Bold>Extreme:</> Provides the most challenging combat experience. Not recommended for first play through.")));
 		
 		// Adding Data To above ID:
 		GameDifficulty->AddDynamicOptions(TEXT("Easy"), FText::FromString(TEXT("Easy")));
 		GameDifficulty->AddDynamicOptions(TEXT("Normal"), FText::FromString(TEXT("Normal")));
 		GameDifficulty->AddDynamicOptions(TEXT("Hard"), FText::FromString(TEXT("Hard")));
 		GameDifficulty->AddDynamicOptions(TEXT("Extreme"), FText::FromString(TEXT("Extreme")));
+		
+		GameDifficulty->SetDefaultValueFromString(TEXT("Easy"));
 		
 		GameDifficulty->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetCurrentGameDifficulty));
 		GameDifficulty->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetCurrentGameDifficulty));
@@ -75,6 +80,7 @@ void UOptionsDataRegistry::InitGameplayCollectionTab()
 		UListDataObject_String* TestItem = NewObject<UListDataObject_String>();
 		TestItem->SetDataID(FName("TestItem"));
 		TestItem->SetDataDisplayName(FText::FromString("Test Item"));
+		TestItem->SetSoftDescriptionImage(UWarriorFunctionLibrary::GetOptionsSoftImageByTag(WarriorGamePlayTags::UI_Image_TestImage));
 
 		GameplayTabCollection->AddChildListData(TestItem);
 	}

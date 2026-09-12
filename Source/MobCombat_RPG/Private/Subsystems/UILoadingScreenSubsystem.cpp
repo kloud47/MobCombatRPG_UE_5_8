@@ -112,9 +112,11 @@ void UUILoadingScreenSubsystem::TryUpdateLoadingScreen()
 	{
 		// Try removing the current active loading screen
 		TryRemoveLoadingScreen();
-		
 		HoldLoadingScreenStartUpTime = -1.f;
+		
 		// Notify the loading is complete
+		NotifyLoadingScreenVisibilityChanged(false);\
+		
 		// Disable the Ticking
 		SetTickableTickType(ETickableTickType::Never);
 		
@@ -231,8 +233,6 @@ void UUILoadingScreenSubsystem::TryRemoveLoadingScreen()
 	
 	GetGameInstance()->GetGameViewportClient()->RemoveViewportWidgetContent(CachedCreatedLoadingScreenWidget.ToSharedRef());
 	CachedCreatedLoadingScreenWidget.Reset(); // Free the memory Allocated to it: otherwise it will always be present in this GameInstance class:
-	
-	NotifyLoadingScreenVisibilityChanged(false);
 }
 
 void UUILoadingScreenSubsystem::NotifyLoadingScreenVisibilityChanged(bool bIsVisible)

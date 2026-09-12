@@ -3,7 +3,6 @@
 
 #include "Widget/OptionsMenu/ListDataObject_String.h"
 
-#include "WarriorDebugHelper.h"
 #include "Widget/OptionsMenu/OptionsDataInteractionHelper.h"
 
 void UListDataObject_String::AddDynamicOptions(const FString& InStringValue, const FText& InDisplayText)
@@ -73,7 +72,11 @@ void UListDataObject_String::OnDataObjectInitialized()
 		CurrentStringValue = AvailableOptionsStringArray[0];
 	}
 	
-	// TODO::Read from the saved string value and use it to set the CurrentStringValue
+	if (HasDefaultValue())
+	{
+		CurrentStringValue = GetDefaultValueAsString();
+	}
+	
 	if (DataDynamicGetter)
 	{
 		if (!DataDynamicGetter->GetValueAsString().IsEmpty())
@@ -86,6 +89,29 @@ void UListDataObject_String::OnDataObjectInitialized()
 	{
 		CurrentDisplayText = FText::FromString(TEXT("Invalid Option"));
 	}
+}
+
+bool UListDataObject_String::CanResetBackToDefaultValue() const
+{
+	return HasDefaultValue() && CurrentStringValue != GetDefaultValueAsString();
+}
+
+bool UListDataObject_String::TryResetBackToDefaultValue()
+{
+	if (CanResetBackToDefaultValue())
+	{
+		CurrentStringValue = GetDefaultValueAsString();
+		
+		TrySetDisplayTextFromStringValue(CurrentStringValue);
+		
+		if (DataDynamicGetter)
+		{
+			DataDynamicGetter->SetValueFromString(CurrentStringValue);
+			NotifyListDataModified(this, EOptionsListDataModifyReason::ResetToDefault);
+			return true;
+		}
+	}
+	return false;
 }
 
 bool UListDataObject_String::TrySetDisplayTextFromStringValue(const FString& InStringValue)

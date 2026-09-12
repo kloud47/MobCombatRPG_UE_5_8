@@ -12,7 +12,7 @@ class UWarriorGameUserSettings;
 class MOBCOMBAT_RPG_API FOptionsDataInteractionHelper
 {
 public:
-	FOptionsDataInteractionHelper(const FString& InSetterOrGetterFuncPath);
+	explicit FOptionsDataInteractionHelper(const FString& InSetterOrGetterFuncPath);
 	
 	FString GetValueAsString() const;
 	void SetValueFromString(const FString& InStringValue);

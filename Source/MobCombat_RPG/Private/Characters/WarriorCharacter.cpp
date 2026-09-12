@@ -14,6 +14,9 @@
 #include "Components/UI/HeroUIComponent.h"
 #include "DataAssets/Input/DA_InputConfig.h"
 #include "DataAssets/StartupData/DA_StartupHeroData.h"
+#include "DeveloperSettings/WarriorGameUserSettings.h"
+#include "Engine/LocalPlayer.h"
+#include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameModes/RPGGameModeBase.h"
@@ -76,24 +79,25 @@ void AWarriorCharacter::PossessedBy(AController* NewController)
 		{
 			int32 AbilityApplyLevel = 1;
 
-			if (ARPGGameModeBase* BaseGameMode = GetWorld()->GetAuthGameMode<ARPGGameModeBase>())
+			if (UWarriorGameUserSettings* UserSettings = UWarriorGameUserSettings::Get())
 			{
-				switch (BaseGameMode->GetCurrentGameDifficulty())
+				const FString CurrentDifficulty = UserSettings->GetCurrentGameDifficulty();
+
+				if (CurrentDifficulty.Equals(TEXT("Easy"), ESearchCase::IgnoreCase))
 				{
-				case EWarriorGameplayDifficulty::Easy:
 					AbilityApplyLevel = 4;
-					break;
-				case EWarriorGameplayDifficulty::Normal:
-					AbilityApplyLevel = 3;	
-					break;
-				case EWarriorGameplayDifficulty::Hard:
+				}
+				else if (CurrentDifficulty.Equals(TEXT("Normal"), ESearchCase::IgnoreCase))
+				{
+					AbilityApplyLevel = 3; 
+				}
+				else if (CurrentDifficulty.Equals(TEXT("Hard"), ESearchCase::IgnoreCase))
+				{
 					AbilityApplyLevel = 2;
-					break;
-				case EWarriorGameplayDifficulty::VeryHard:
+				}
+				else if (CurrentDifficulty.Equals(TEXT("Extreme"), ESearchCase::IgnoreCase))
+				{
 					AbilityApplyLevel = 1;
-					break;
-				default:
-					break;	
 				}
 			}
 			
@@ -140,17 +144,23 @@ void AWarriorCharacter::Input_Move(const FInputActionValue& Value)
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 	const FRotator MovementRotation(0.f, Controller->GetControlRotation().Yaw, 0.0f);
 
-	if (MovementVector.Y != 0.f)
-	{
-		const FVector ForwardDirection = MovementRotation.RotateVector(FVector::ForwardVector);
-		AddMovementInput(ForwardDirection, MovementVector.Y);
-	}
-
-	if (MovementVector.X != 0.f)
-	{
-		const FVector RightDirection = MovementRotation.RotateVector(FVector::RightVector);
-		AddMovementInput(RightDirection, MovementVector.X);
-	}
+	// if (MovementVector.Y != 0.f)
+	// {
+	// 	const FVector ForwardDirection = MovementRotation.RotateVector(FVector::ForwardVector);
+	// 	AddMovementInput(ForwardDirection, MovementVector.Y);
+	// }
+	//
+	// if (MovementVector.X != 0.f)
+	// {
+	// 	const FVector RightDirection = MovementRotation.RotateVector(FVector::RightVector);
+	// 	AddMovementInput(RightDirection, MovementVector.X);
+	// }
+	
+	const FVector ForwardDirection = FRotationMatrix(MovementRotation).GetUnitAxis(EAxis::X);
+	AddMovementInput(ForwardDirection, MovementVector.Y);
+	
+	const FVector RightDirection = FRotationMatrix(MovementRotation).GetUnitAxis(EAxis::Y);
+	AddMovementInput(RightDirection, MovementVector.X);
 }
 
 void AWarriorCharacter::Input_Look(const FInputActionValue& Value)

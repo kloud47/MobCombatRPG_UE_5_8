@@ -63,4 +63,7 @@ public:
 	
 	UFUNCTION(BlueprintPure, Category = "Warrior|FunctionLibrary")
 	static TSoftClassPtr<UWidget_ActivatableWidget> GetFrontendSOftWidgetClassByTag(UPARAM(meta = (Categories = "UI.Widget")) FGameplayTag InWidgetTag);
+	
+	UFUNCTION(BlueprintPure, Category = "Warrior|FunctionLibrary")
+	static TSoftObjectPtr<UTexture2D> GetOptionsSoftImageByTag(UPARAM(meta = (Categories = "UI.Image")) FGameplayTag InImageTag);
 };

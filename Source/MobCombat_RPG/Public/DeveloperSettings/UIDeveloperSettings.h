@@ -8,6 +8,7 @@
 #include "UObject/SoftObjectPtr.h"
 #include "UIDeveloperSettings.generated.h"
 
+class UTexture2D;
 class UWidget_ActivatableWidget;
 /**
  *
@@ -21,4 +22,6 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category = "Widget Reference", meta = (ForceInlineRow, Categories = "UI.Widget"))
 	TMap<FGameplayTag, TSoftClassPtr<UWidget_ActivatableWidget>> FrontendWidgetMap;
 	
+	UPROPERTY(Config, EditAnywhere, Category = "Widget Reference", meta = (ForceInlineRow, Categories = "UI.Image"))
+	TMap< FGameplayTag, TSoftObjectPtr<UTexture2D> > OptionsScreenSoftImageMap;
 };
