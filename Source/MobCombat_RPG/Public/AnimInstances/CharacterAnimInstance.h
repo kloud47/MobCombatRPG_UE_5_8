@@ -6,6 +6,7 @@
 #include "AnimInstances/BaseAnimInstance.h"
 #include "CharacterAnimInstance.generated.h"
 
+	enum class EWarriorLocomotionDirection : uint8;
 class ABaseCharacter;
 class UCharacterMovementComponent;
 /**
@@ -25,12 +26,18 @@ protected:
 	UPROPERTY()
 	UCharacterMovementComponent* OwningCharacterMovementComponent;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="AnimData|LocomotionData")
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="AnimData|VelocityData")
 	float GroundSpeed;
-
+	
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="AnimData|LocomotionData")
 	bool bHasAcceleration;
 	
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category="AnimData|LocomotionData")
 	float LocomotionDirection;
+	
+	EWarriorLocomotionDirection VelocityLocomotionDirection;
+	
+	UPROPERTY(BlueprintReadOnly, Category="AnimData|LocomotionData")
+	bool IsFalling;
+	
 };

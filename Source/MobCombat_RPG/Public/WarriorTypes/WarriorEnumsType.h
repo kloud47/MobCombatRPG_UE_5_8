@@ -46,6 +46,23 @@ enum class EWarriorGameplayDifficulty : uint8
 	VeryHard
 };
 
+// ----------------------- ( Animation ) -----------------------------------------------------------------------
+UENUM()
+enum class EWarriorLocomotionDirection: uint8
+{
+	ELD_Forward UMETA(DisplayName = "Forward"),
+	ELD_Backward UMETA(DisplayName = "Backward"),
+	ELD_Left UMETA(DisplayName = "Left"),
+	ELD_Right UMETA(DisplayName = "Right")
+};
+
+UENUM()
+enum class EWarriorState : uint8
+{
+	EWS_Unarmed UMETA(DisplayName = "Unarmed"),
+	EWS_Armed UMETA(DisplayName = "Armed")
+};
+
 // ----------------------- ( UI ) ----------------------------------------------------------------------
 
 UENUM(BlueprintType)
