@@ -4,6 +4,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "EnhancedInputSubsystems.h"
+#include "KismetTraceUtils.h"
 #include "WarriorDebugHelper.h"
 #include "WarriorGamePlayTags.h"
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
@@ -20,7 +21,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameModes/RPGGameModeBase.h"
-#include "WarriorTypes/WarriorEnumsType.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
+
 
 AWarriorCharacter::AWarriorCharacter()
 {
@@ -35,6 +38,7 @@ AWarriorCharacter::AWarriorCharacter()
 	CameraBoom->TargetArmLength = 200.f;
 	CameraBoom->SocketOffset = FVector(0.f, 55.f, 65.f);
 	CameraBoom->bUsePawnControlRotation = true;
+	CameraBoom->CameraLagSpeed = 3.5f;
 
 	CameraKun = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	CameraKun->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
@@ -110,7 +114,9 @@ void AWarriorCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Debug::Print("Started");
+	CurrentGate = EWarriorGate::EWG_Jogging;
+	UpdateMovementGateFunction();
+	WalkingGateStateChange(CurrentGate);
 }
 
 void AWarriorCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -128,6 +134,10 @@ void AWarriorCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	// Binding on basis of Tags:
 	WarriorInputComponent->BindNativeInputAction(InputConfig, WarriorGamePlayTags::InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move);
+	WarriorInputComponent->BindNativeInputAction(InputConfig, WarriorGamePlayTags::InputTag_Walk, ETriggerEvent::Started, this, &ThisClass::Input_WalkStart);
+	WarriorInputComponent->BindNativeInputAction(InputConfig, WarriorGamePlayTags::InputTag_Walk, ETriggerEvent::Completed, this, &ThisClass::Input_WalkEnd);
+	WarriorInputComponent->BindNativeInputAction(InputConfig, WarriorGamePlayTags::InputTag_Jump, ETriggerEvent::Started, this, &ThisClass::Input_Jump_Start);
+	WarriorInputComponent->BindNativeInputAction(InputConfig, WarriorGamePlayTags::InputTag_Jump, ETriggerEvent::Completed, this, &ThisClass::Input_Jump_End);
 	WarriorInputComponent->BindNativeInputAction(InputConfig, WarriorGamePlayTags::InputTag_Look, ETriggerEvent::Triggered, this, &ThisClass::Input_Look);
 
 	WarriorInputComponent->BindNativeInputAction(InputConfig, WarriorGamePlayTags::InputTag_SwitchTarget, ETriggerEvent::Triggered, this, &ThisClass::Input_SwitchTargetTriggered);
@@ -137,6 +147,13 @@ void AWarriorCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	
 	// Binding on basis of Events:
 	WarriorInputComponent->BindAbilityInputAction(InputConfig, this, &ThisClass::Input_AbilityInputPressed, &ThisClass::Input_AbilityInputReleased);	
+}
+
+void AWarriorCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	
+	
 }
 
 void AWarriorCharacter::Input_Move(const FInputActionValue& Value)
@@ -163,6 +180,22 @@ void AWarriorCharacter::Input_Move(const FInputActionValue& Value)
 	AddMovementInput(RightDirection, MovementVector.X);
 }
 
+void AWarriorCharacter::Input_WalkStart(const FInputActionValue& Value)
+{
+	// Debug::Print("Walking Started");
+	CurrentGate = EWarriorGate::EWG_Walking;
+	UpdateMovementGateFunction();
+	WalkingGateStateChange(CurrentGate);
+}
+
+void AWarriorCharacter::Input_WalkEnd(const FInputActionValue& Value)
+{
+	// Debug::Print("Walking Ended");
+	CurrentGate = EWarriorGate::EWG_Jogging;
+	UpdateMovementGateFunction();
+	WalkingGateStateChange(CurrentGate);
+}
+
 void AWarriorCharacter::Input_Look(const FInputActionValue& Value)
 {
 	const FVector2D LookDirection = Value.Get<FVector2D>();
@@ -176,6 +209,17 @@ void AWarriorCharacter::Input_Look(const FInputActionValue& Value)
 		AddControllerPitchInput(LookDirection.Y);
 	}
 }
+
+void AWarriorCharacter::Input_Jump_Start(const FInputActionValue& Value)
+{
+	Jump();
+}
+
+void AWarriorCharacter::Input_Jump_End(const FInputActionValue& Value)
+{
+	StopJumping();
+}
+
 
 void AWarriorCharacter::Input_SwitchTargetTriggered(const FInputActionValue& Value)
 {
@@ -213,4 +257,134 @@ void AWarriorCharacter::Input_AbilityInputReleased(FGameplayTag InInputTag)
 {
 	WarriorAbilitySystemComponent->OnAbilityInputReleased(InInputTag);
 }
+
+void AWarriorCharacter::UpdateMovementGateFunction()
+{
+	const FWarriorMovementGateData* CurrentGateSettings = GateSettings.Find(CurrentGate);
+	GetCharacterMovement()->MaxWalkSpeed = CurrentGateSettings->MaxWalkSpeed;
+	GetCharacterMovement()->MaxAcceleration = CurrentGateSettings->MaxAcceleration;
+	GetCharacterMovement()->BrakingDecelerationWalking = CurrentGateSettings->BrakingDeceleration;
+	GetCharacterMovement()->BrakingFrictionFactor = CurrentGateSettings->BrakingFrictionFactor;
+	GetCharacterMovement()->BrakingFriction = CurrentGateSettings->BrakingFriction;
+	GetCharacterMovement()->bUseSeparateBrakingFriction = CurrentGateSettings->bUseSeparateBrakingFriction;
+}
+
+float AWarriorCharacter::GetGroundDistance()
+{
+	const FVector ActorLocation = GetActorLocation();
+	const FVector CapsuleHalfHeight(0.f, 0.f, GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+	
+	const FVector StartLocation = ActorLocation - CapsuleHalfHeight;
+	const FVector EndLocation = StartLocation - FVector(0.f, 0.f, 1000.f);
+	
+	FHitResult HitResult;
+	const TArray<AActor*> ActorsToIgnore;
+	
+	const bool bHit = UKismetSystemLibrary::SphereTraceSingle(
+		GetWorld(),
+		StartLocation,
+		EndLocation,
+		5.f,
+		ETraceTypeQuery::TraceTypeQuery1,
+		false,
+		ActorsToIgnore,
+		EDrawDebugTrace::None,
+		HitResult,
+		true
+	);
+	
+	if (bHit) return HitResult.Distance;
+	return 1000.f;
+}
+
+FVector AWarriorCharacter::GetFurthestValidLocationAlongPath(FVector Start, FVector End)
+{
+	const UCapsuleComponent* Capsule = GetCapsuleComponent();
+	const float Radius = Capsule->GetScaledCapsuleRadius();
+	const float HalfHeight = Capsule->GetScaledCapsuleHalfHeight();
+	
+	const FVector Delta = End - Start;
+	const float PathDistance = Delta.Size();
+	if (PathDistance <= KINDA_SMALL_NUMBER)
+	{
+		return Start;
+	}
+	
+	const FVector MoveDirection = Delta / PathDistance;
+	
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldStatic));
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldDynamic));
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Vehicle));
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Destructible));
+	
+	TArray<AActor*> ActorsToIgnore;
+	ActorsToIgnore.Add(this);
+	
+	const float StepSize = FMath::Max(Radius*2.f, 1.f);
+	const float TraceHalfHeight = FMath::Max(HalfHeight - 2.f, Radius);
+	
+	for (float Distance = PathDistance; Distance > 0.f; Distance -= StepSize )
+	{
+		const FVector CapsuleLocation = Start + MoveDirection * Distance;
+		
+		TArray<FHitResult> OutHits;
+		
+		UKismetSystemLibrary::CapsuleTraceMultiForObjects(
+			this,
+			CapsuleLocation,
+			CapsuleLocation,
+			Radius,
+			TraceHalfHeight,
+			ObjectTypes,
+			false,
+			ActorsToIgnore,
+			EDrawDebugTrace::ForDuration,
+			OutHits,
+			true
+		);
+		
+		if (IsValidDashLocation(CapsuleLocation, OutHits, ActorsToIgnore))
+		{
+			return CapsuleLocation;
+		}
+	}
+	
+	return Start;
+}
+
+bool AWarriorCharacter::IsValidDashLocation(const FVector& Location, const TArray<FHitResult>& HitResults,
+	const TArray<AActor*>& ActorToIgnore)
+{
+	// 1) Cheap Check First: Is anything solid Overlapping the capsule here?
+	for (const FHitResult& Hit : HitResults)
+	{
+		const UPrimitiveComponent* Comp = Hit.GetComponent();
+		if (Comp && Comp->GetCollisionResponseToChannel(ECC_Pawn) == ECR_Block)
+		{
+			return false;
+		}
+	}
+	
+	// 2) is there a ground Underneath?
+	const float halfHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+	const FVector FloorEnd = Location - FVector(0.f, 0.f, halfHeight + 600.f);
+	
+	FHitResult FloorHitResult;
+	bool Hit = UKismetSystemLibrary::LineTraceSingle(
+		this,
+		Location,
+		FloorEnd,
+		UEngineTypes::ConvertToTraceType(ECC_Visibility),
+		false,
+		ActorToIgnore,
+		EDrawDebugTrace::ForDuration,
+		FloorHitResult,
+		true
+		);
+	
+	return Hit;
+}
+
 

@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
 #include "Characters/BaseCharacter.h"
+#include "WarriorTypes/WarriorStructTypes.h"
+#include "WarriorTypes/WarriorEnumsType.h"
 #include "WarriorCharacter.generated.h"
 
 class UHeroUIComponent;
@@ -40,6 +42,7 @@ protected:
 	
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	virtual void Tick(float DeltaSeconds) override;
 
 private:
 #pragma region Components
@@ -63,7 +66,11 @@ private:
 	FVector2D SwitchDirection = FVector2D::ZeroVector;
 
 	void Input_Move(const FInputActionValue& Value);
+	void Input_WalkStart(const FInputActionValue& Value);
+	void Input_WalkEnd(const FInputActionValue& Value);
 	void Input_Look(const FInputActionValue& Value);
+	void Input_Jump_Start(const FInputActionValue& Value);
+	void Input_Jump_End(const FInputActionValue& Value);
 
 	void Input_SwitchTargetTriggered(const FInputActionValue& Value);
 	void Input_SwitchTargetCompleted(const FInputActionValue& Value);
@@ -73,7 +80,26 @@ private:
 	void Input_AbilityInputPressed(FGameplayTag InInputTag);
 	void Input_AbilityInputReleased(FGameplayTag InInputTag);
 #pragma endregion
-
+	
+	void UpdateMovementGateFunction();
+	
 public:
+	UFUNCTION(BlueprintImplementableEvent)
+	void WalkingGateStateChange(EWarriorGate Gate);
+	
+	UFUNCTION(BlueprintPure)
+	float GetGroundDistance(); // For Calculating Jump landings and Ground Distance: 
+	
+	UFUNCTION(BlueprintPure)
+	FVector GetFurthestValidLocationAlongPath(FVector Start, FVector End);
+	
+	bool IsValidDashLocation(const FVector& Location, const TArray<FHitResult>& HitResults, const TArray<AActor*>& ActorToIgnore);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
+	EWarriorGate CurrentGate;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Combat")
+	TMap<EWarriorGate, FWarriorMovementGateData> GateSettings;
+	
 	FORCEINLINE UHeroCombatComponent* GetHeroCombatComponent() const { return HeroCombatComponent; }
 };

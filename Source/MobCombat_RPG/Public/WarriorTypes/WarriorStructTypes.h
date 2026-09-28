@@ -46,6 +46,9 @@ struct FWarriorHeroWeaponData
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UHeroLinkedAnimLayer> WeaponAnimLayerToLink;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UHeroLinkedAnimLayer> UnarmedAnimLayerToLink;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UInputMappingContext* WeaponInputMappingContext;
@@ -61,4 +64,28 @@ struct FWarriorHeroWeaponData
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSoftObjectPtr<UTexture2D> SoftWeaponIconTexture;
+};
+
+USTRUCT(BlueprintType)
+struct FWarriorMovementGateData
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxWalkSpeed;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxAcceleration;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BrakingDeceleration;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BrakingFrictionFactor;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BrakingFriction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bUseSeparateBrakingFriction;
 };

@@ -8,6 +8,8 @@ namespace WarriorGamePlayTags
 	/** Input Tags ------------------------------------------------------------**/
 	// These ability tags help identify the ability and Activates them:
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Move, "InputTag.Move");
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Walk, "InputTag.Walk");
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Jump, "InputTag.Jump");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Look, "InputTag.Look");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_EquipAxe, "InputTag.EquipAxe");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_UnequipAxe, "InputTag.UnequipAxe");
@@ -34,6 +36,7 @@ namespace WarriorGamePlayTags
 	/** Player Tags -----------------------------------------------------------**/
 	UE_DEFINE_GAMEPLAY_TAG(Player_Cooldown_SpecialWeaponAbility_Light,"Player.Cooldown.SpecialWeaponAbility.Light");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Cooldown_SpecialWeaponAbility_Heavy,"Player.Cooldown.SpecialWeaponAbility.Heavy");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Cooldown_DashTeleport,"Player.Cooldown.DashTeleport");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_PickUp_Stones,"Player.Ability.PickUp.Stones");
 	
 	UE_DEFINE_GAMEPLAY_TAG(Player_Weapon_Axe, "Player.Weapon.Axe");
@@ -45,6 +48,7 @@ namespace WarriorGamePlayTags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Attack_Heavy_Axe, "Player.Ability.Attack.Heavy.Axe");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_HitPause,"Player.Ability.HitPause");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Roll,"Player.Ability.Roll");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_DashTeleport,"Player.Ability.DashTeleport");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Block,"Player.Ability.Block");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_TargetLock,"Player.Ability.TargetLock");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Rage,"Player.Ability.Rage");

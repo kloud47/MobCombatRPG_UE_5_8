@@ -47,7 +47,7 @@ enum class EWarriorGameplayDifficulty : uint8
 };
 
 // ----------------------- ( Animation ) -----------------------------------------------------------------------
-UENUM()
+UENUM(BlueprintType)
 enum class EWarriorLocomotionDirection: uint8
 {
 	ELD_Forward UMETA(DisplayName = "Forward"),
@@ -56,11 +56,26 @@ enum class EWarriorLocomotionDirection: uint8
 	ELD_Right UMETA(DisplayName = "Right")
 };
 
-UENUM()
+UENUM(BlueprintType)
 enum class EWarriorState : uint8
 {
 	EWS_Unarmed UMETA(DisplayName = "Unarmed"),
 	EWS_Armed UMETA(DisplayName = "Armed")
+};
+
+UENUM(BlueprintType)
+enum class EWarriorGate : uint8
+{
+	EWG_Walking UMETA(DisplayName = "Walking"),
+	EWG_Jogging UMETA(DisplayName = "Jogging"),
+};
+
+UENUM(BlueprintType)
+enum class EYawOffset : uint8
+{
+	EYO_Accumulate UMETA(DisplayName = "Accumulate"),
+	EYO_BlendOut UMETA(DisplayName = "BlendOut"),
+	EYO_Hold UMETA(DisplayName = "Hold")
 };
 
 // ----------------------- ( UI ) ----------------------------------------------------------------------
