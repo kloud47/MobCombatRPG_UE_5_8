@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystem/Abilities/WarriorHeroGameplayAbility.h"
+#include "WarriorTypes/WarriorEnumsType.h"
 #include "HeroGameplayAbility_DashTeleport.generated.h"
 
 /**
@@ -21,9 +22,17 @@ protected:
 	//~ End UGameplayAbility Interface
 	
 private:
-	UPROPERTY(EditDefaultsOnly, Category="Dash")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Dash", meta=(AllowPrivateAccess="true"))
 	float DashDuration = 0.3f;
 	
-	UPROPERTY(EditDefaultsOnly, Category="Dash")
-	float MaxDashFloorDistance = 100.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Dash", meta=(AllowPrivateAccess="true"))
+	float MaxDashFloorDistance = 500.f;
+	
+	FVector GetDashDirectionVector();
+	
+	UFUNCTION(BlueprintPure)
+	FVector CalculateDashTargetLocation();
+	
+	UFUNCTION(BlueprintPure)
+	EWarriorLocomotionDirection GetActorDashDirection();
 };

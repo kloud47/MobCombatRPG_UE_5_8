@@ -66,4 +66,9 @@ public:
 	
 	UFUNCTION(BlueprintPure, Category = "Warrior|FunctionLibrary")
 	static TSoftObjectPtr<UTexture2D> GetOptionsSoftImageByTag(UPARAM(meta = (Categories = "UI.Image")) FGameplayTag InImageTag);
+	
+	// -----------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	UFUNCTION(BlueprintCallable, Category = "Warrior|MeshTransition")
+	static TArray<int32> GetTriangleIndicesForMaterialSlot(UStaticMeshComponent* MeshComponent, int32 MaterialSlotIndex, int32 LODIndex);
 };

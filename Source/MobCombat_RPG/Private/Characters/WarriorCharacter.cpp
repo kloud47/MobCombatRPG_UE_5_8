@@ -334,13 +334,13 @@ FVector AWarriorCharacter::GetFurthestValidLocationAlongPath(FVector Start, FVec
 		UKismetSystemLibrary::CapsuleTraceMultiForObjects(
 			this,
 			CapsuleLocation,
-			CapsuleLocation,
+		CapsuleLocation,
 			Radius,
 			TraceHalfHeight,
 			ObjectTypes,
 			false,
 			ActorsToIgnore,
-			EDrawDebugTrace::ForDuration,
+			EDrawDebugTrace::None,
 			OutHits,
 			true
 		);
@@ -379,7 +379,7 @@ bool AWarriorCharacter::IsValidDashLocation(const FVector& Location, const TArra
 		UEngineTypes::ConvertToTraceType(ECC_Visibility),
 		false,
 		ActorToIgnore,
-		EDrawDebugTrace::ForDuration,
+		EDrawDebugTrace::None,
 		FloorHitResult,
 		true
 		);

@@ -5,12 +5,15 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GenericTeamAgentInterface.h"
+#include "StaticMeshResources.h"
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "Components/Combat/PawnCombatComponent.h"
 #include "Interfaces/PawnCombatInterface.h"
 #include "WarriorGamePlayTags.h"
+#include "Components/StaticMeshComponent.h"
 #include "DeveloperSettings/UIDeveloperSettings.h"
 #include "Engine/LatentActionManager.h"
+#include "Engine/StaticMesh.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "WarriorTypes/WarriorCountdownAction.h"
 
@@ -194,3 +197,55 @@ TSoftObjectPtr<UTexture2D> UWarriorFunctionLibrary::GetOptionsSoftImageByTag(UPA
 	
 	return UIDeveloperSettings->OptionsScreenSoftImageMap.FindRef(InImageTag);
 }
+
+// ---------------------( Niagara Particles )--------------------------------------------------------------------------------------------------------------------------------
+
+/* 
+ * The problem this function solves
+
+Niagara's Mesh Data Interface lets you sample a static mesh's vertices/triangles to spawn particles from its surface (which is how the Disintegration effect works — particles 
+spawn from the mesh's own geometry as it crumbles). But by default, when you sample "give me a random triangle from this mesh," Niagara doesn't know or care which material slot that 
+triangle belongs to — it just picks from the whole mesh.
+If your mesh has, say, 3 material slots (skin, armor, cloth), and you want each part to disintegrate with a different particle material 
+(so armor crumbles into metal sparks, cloth crumbles into ash), you need a way to ask: "give me only the triangles that belong to material slot 2." 
+A Static Mesh's triangle data doesn't expose that in an easy, Niagara-friendly way out of the box — that's the gap this function fills.
+
+How it replaces manual multi-emitter setup
+
+Without this function, the manual workaround is: create a separate Niagara emitter per material slot, and somehow manually tell each one "only use this subset 
+of the mesh." That's painful and doesn't scale if an artist changes the mesh's material count later.
+
+With this function: you call it once per material slot (passing MaterialSlotIndex), and it does the filtering in C++ instead of requiring separate manual emitter setups.
+You can then feed each returned triangle list into Niagara (via a Data Interface or a Niagara array parameter) so a single emitter (or a small number of emitters, one per slot but auto-populated) 
+knows exactly which triangles to sample from for that material.
+*/
+
+TArray<int32> UWarriorFunctionLibrary::GetTriangleIndicesForMaterialSlot(UStaticMeshComponent* MeshComponent,
+	int32 MaterialSlotIndex, int32 LODIndex)
+{
+	TArray<int32> Triangles;
+	
+	if (UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(MeshComponent))
+	{
+		if (UStaticMesh* StaticMesh = StaticMeshComponent->GetStaticMesh())
+		{
+			if (StaticMesh->GetRenderData() && StaticMesh->GetRenderData()->LODResources.IsValidIndex(LODIndex))
+			{
+				FStaticMeshLODResources& LOD = StaticMesh->GetRenderData()->LODResources[LODIndex];
+				for (const FStaticMeshSection& Section : LOD.Sections) // LOD contain Sections of meshes which have diff slot index
+				{
+					if (Section.MaterialIndex == MaterialSlotIndex) // Check for the exact Material Slots
+					{
+						for (int32 TriangleIndex = 0; TriangleIndex < Section.NumTriangles; TriangleIndex++)
+						{
+							Triangles.Add(Section.FirstIndex / 3 + TriangleIndex); // Triangle First Indexes are in multiple of 3s
+						}
+					}
+				}
+			}
+		}
+	}
+	return Triangles;
+}
+
+// ---------------------( Niagara Particles )--------------------------------------------------------------------------------------------------------------------------------

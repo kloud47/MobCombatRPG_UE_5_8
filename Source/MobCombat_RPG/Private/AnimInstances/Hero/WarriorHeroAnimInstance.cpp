@@ -70,7 +70,7 @@ void UWarriorHeroAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSecond
 	SetGaitData(DeltaSeconds);
 	UpdateOrientationData();
 	UpdateRootYawOffset(DeltaSeconds);
-	Debug::Print("DEg : ", RootYawOffset, 1);
+	// Debug::Print("DEg : ", RootYawOffset, 1);
 }
 
 void UWarriorHeroAnimInstance::SetVelocityData()
